@@ -1,0 +1,9 @@
+{% extends 'auth/base.html' %}{% block title %}Create account{% endblock %}
+{% block content %}<section class="auth-card"><span class="auth-icon"><i data-lucide="user-round-plus"></i></span><span class="eyebrow">CUSTOMER SUPPORT PORTAL</span><h1>Create your account</h1><p>Register to submit complaints and track progress.</p>
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="notice notice-{{ category }}" role="alert">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+<form method="post" action="{{ url_for('register') }}" class="auth-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label class="field"><span>Full name</span><input name="name" autocomplete="name" maxlength="100" required value="{{ name or '' }}">{% if errors and errors.name %}<small class="field-error">{{ errors.name }}</small>{% endif %}</label>
+<label class="field"><span>Email address</span><input name="email" type="email" autocomplete="email" maxlength="254" required value="{{ email or '' }}">{% if errors and errors.email %}<small class="field-error">{{ errors.email }}</small>{% endif %}</label>
+<label class="field"><span>Password</span><input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="256" required>{% if errors and errors.password %}<small class="field-error">{{ errors.password }}</small>{% endif %}</label>
+<label class="field"><span>Confirm password</span><input name="confirm_password" type="password" autocomplete="new-password" minlength="8" maxlength="256" required>{% if errors and errors.confirm_password %}<small class="field-error">{{ errors.confirm_password }}</small>{% endif %}</label>
+<button class="button button-primary auth-submit" type="submit">Create account</button></form><p class="auth-switch">Already registered? <a href="{{ url_for('login') }}">Sign in</a></p></section>{% endblock %}

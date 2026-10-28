@@ -1,0 +1,26 @@
+{% extends 'shared/base.html' %}
+{% block title %}New complaint{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><span class="eyebrow">CASE INTAKE</span><h1>New complaint</h1><p>{% if customer_mode %}Tell us what happened and we will keep you updated here.{% else %}Enter the customer and issue details.{% endif %}</p></div>
+</section>
+<div class="form-layout">
+  <form id="complaint-form" class="panel complaint-form" novalidate data-customer-mode="{{ 'true' if customer_mode else 'false' }}">
+    <div id="form-error" class="alert alert-error hidden" role="alert"></div>
+    {% if customer_mode %}<div class="account-note"><span class="account-note-icon"><i data-lucide="user-round-check"></i></span><span>Submitting as <strong>{{ current_user.name }}</strong><small>{{ current_user.email }}</small></span></div>{% endif %}
+    <div class="form-section-heading"><span class="step-number">01</span><div><h2>Complaint details</h2><p>Share enough information to help us understand the issue.</p></div></div>
+    <div class="field-grid">
+      {% if not customer_mode %}
+      <label class="field"><span>Name <b>*</b></span><input name="customer_name" required maxlength="100" autocomplete="name" placeholder="Customer name"><small class="field-error"></small></label>
+      <label class="field"><span>Email <b>*</b></span><input name="email" type="email" required maxlength="254" autocomplete="email" placeholder="name@example.com"><small class="field-error"></small></label>
+      {% endif %}
+      <label class="field"><span>Order ID</span><input name="order_id" maxlength="80" placeholder="Optional order reference"></label>
+      {% if not customer_mode %}<label class="field"><span>Phone</span><input name="phone" maxlength="40" autocomplete="tel" placeholder="Optional contact number"></label>{% endif %}
+      <label class="field field-full"><span>What happened? <b>*</b></span><textarea name="complaint_text" required minlength="15" maxlength="5000" rows="7" placeholder="Describe the product, order, or service issue (15 to 5,000 characters)"></textarea><div class="field-foot"><small class="field-error"></small><small><span id="char-count">0</span> / 5,000</small></div></label>
+    </div>
+    <div class="form-actions"><span>{% if customer_mode %}Your case will be added to your account.{% else %}Review the suggested next steps before taking action.{% endif %}</span><button class="button button-primary" type="submit"><span class="button-label">{{ 'Submit complaint' if customer_mode else 'Analyze complaint' }}</span><span class="button-loader hidden"></span><i data-lucide="arrow-right"></i></button></div>
+  </form>
+  <aside class="panel form-aside"><span class="help-icon"><i data-lucide="notebook-pen"></i></span><span class="eyebrow">A HELPFUL TIP</span><h2>Include the details that matter</h2><p>Order references, dates, and a clear description can help the support team review your case.</p><div class="form-aside-foot"><i data-lucide="lock-keyhole"></i><span>Your complaint is saved to the associated customer account.</span></div></aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static',filename='js/submit.js', v='20261028') }}" defer></script>{% endblock %}

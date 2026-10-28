@@ -1,0 +1,38 @@
+{% extends 'shared/base.html' %}
+{% block title %}Complaint #{{ complaint.id }}{% endblock %}
+{% block breadcrumb %}<a href="{{ url_for('complaints') }}">Complaints</a><i data-lucide="chevron-right"></i> #{{ complaint.id }}{% endblock %}
+{% block content %}
+<section class="detail-toolbar">
+  <div><a class="back-link" href="{{ url_for('complaints') }}"><i data-lucide="arrow-left"></i> Back to complaints</a><span class="eyebrow">CASE #{{ complaint.id }}</span><h1>Complaint review</h1></div>
+  <div class="detail-toolbar-badges"><span class="badge status-{{ complaint.status|lower|replace(' ','-') }}">{{ complaint.status }}</span><span class="badge ai-{{ complaint.ai_status|lower }}">Analysis {{ complaint.ai_status|lower }}</span></div>
+</section>
+
+<div class="detail-grid">
+  <div class="detail-main">
+    <section class="panel detail-card complaint-overview-card">
+      <div class="section-heading"><div><span class="eyebrow">CUSTOMER</span><h2>{{ complaint.customer_name }}</h2></div><span class="detail-date">{{ complaint.created_at|datetime }}</span></div>
+      <div class="customer-info"><div><small>Email</small><a href="mailto:{{ complaint.email }}">{{ complaint.email }}</a></div><div><small>Order ID</small><strong>{{ complaint.order_id or '—' }}</strong></div><div><small>Phone</small><strong>{{ complaint.phone or '—' }}</strong></div></div>
+      <blockquote class="complaint-quote"><small>Original complaint</small>{{ complaint.complaint_text }}</blockquote>
+    </section>
+
+    <section class="panel detail-card ai-analysis">
+      <div class="section-heading"><div><span class="eyebrow">CASE ASSESSMENT</span><h2>Analysis</h2></div>{% if complaint.ai_model == 'Synthetic demo' %}<span class="demo-label"><i data-lucide="flask-conical"></i> Synthetic demonstration data</span>{% elif complaint.ai_model %}<small class="model-label">{{ complaint.ai_model }}</small>{% endif %}</div>
+      {% if complaint.ai_status == 'Completed' %}
+        <div class="analysis-tags"><div><small>Category</small><strong>{{ complaint.category }}</strong></div><div><small>Sentiment</small><strong>{{ complaint.sentiment }}</strong></div><div><small>Priority</small><strong><span class="badge priority-{{ complaint.priority|lower|replace(' ','-') }}">{{ complaint.priority }}</span></strong></div></div>
+        <div class="analysis-block"><small>Complaint summary</small><p>{{ complaint.summary }}</p></div>
+        <div class="analysis-block recommended-action"><small>Recommended next step</small><p>{{ complaint.recommended_action }}</p></div>
+        <div class="response-heading"><div><span class="eyebrow">CUSTOMER MESSAGE</span><h3>Generated response</h3><small>Review before sending.</small></div><button class="icon-button copy-button" type="button" data-copy-target="response-text" aria-label="Copy response" title="Copy response"><i data-lucide="copy"></i></button></div>
+        <div id="response-text" class="response-text">{{ complaint.generated_response }}</div>
+      {% else %}<div class="ai-unavailable"><i data-lucide="circle-alert"></i><div><strong>Analysis unavailable</strong><p>The complaint is saved. Retry when ready.</p></div></div>{% endif %}
+    </section>
+  </div>
+
+  <aside class="detail-side">
+    <section class="panel side-card"><span class="eyebrow">CASE WORKFLOW</span><h2>Status</h2><select id="status-select" data-complaint-id="{{ complaint.id }}" aria-label="Complaint status">{% for status in ['Pending','In Progress','Resolved','Closed'] %}<option value="{{ status }}" {% if complaint.status==status %}selected{% endif %}>{{ status }}</option>{% endfor %}</select><small id="status-feedback" class="feedback-text">Updated {{ complaint.updated_at|datetime }}</small></section>
+    <section class="panel side-card"><span class="eyebrow">URGENCY</span><h2>Priority</h2><select id="priority-select" data-complaint-id="{{ complaint.id }}" aria-label="Complaint priority">{% for priority in ['Low','Medium','High','Critical'] %}<option value="{{ priority }}" {% if complaint.priority==priority %}selected{% endif %}>{{ priority }}</option>{% endfor %}</select><small id="priority-feedback" class="feedback-text">Admin-managed priority</small></section>
+    {% if complaint.ai_status != 'Completed' %}<button id="retry-analysis" data-complaint-id="{{ complaint.id }}" class="button button-primary retry-button"><span class="button-label">Retry analysis</span><span class="button-loader hidden"></span><i data-lucide="refresh-cw"></i></button>{% endif %}
+    <p class="human-note"><i data-lucide="user-round-check"></i> Human review required before any action.</p>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static',filename='js/complaints.js') }}" defer></script>{% endblock %}

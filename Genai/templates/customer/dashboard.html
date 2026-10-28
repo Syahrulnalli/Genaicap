@@ -1,0 +1,24 @@
+{% extends 'shared/base.html' %}
+{% block title %}My dashboard{% endblock %}
+{% block content %}
+<section class="page-heading dashboard-heading">
+  <div><span class="eyebrow">CUSTOMER PORTAL</span><h1>Welcome back, {{ current_user.name }}</h1><p>Follow your complaints and see the latest updates.</p></div>
+  <a class="button button-primary" href="{{ url_for('customer_submit_page') }}"><i data-lucide="plus"></i> Submit complaint</a>
+</section>
+<section class="kpi-grid customer-kpis" aria-label="Your complaint totals">
+  <article class="kpi-card kpi-primary"><span class="kpi-icon icon-total"><i data-lucide="layers-3"></i></span><strong>{{ stats.total }}</strong><span>Your complaints</span></article>
+  <article class="kpi-card"><span class="kpi-icon icon-pending"><i data-lucide="clock-3"></i></span><strong>{{ stats.pending }}</strong><span>Pending</span></article>
+  <article class="kpi-card"><span class="kpi-icon icon-progress"><i data-lucide="loader-circle"></i></span><strong>{{ stats.in_progress }}</strong><span>In progress</span></article>
+  <article class="kpi-card"><span class="kpi-icon icon-resolved"><i data-lucide="circle-check"></i></span><strong>{{ stats.resolved }}</strong><span>Resolved</span></article>
+</section>
+<section class="customer-dashboard-grid">
+  <article class="panel recent-panel">
+    <div class="section-heading recent-heading"><div><span class="eyebrow">YOUR ACTIVITY</span><h2>Recent complaints</h2><p>Your latest submissions and their status.</p></div><a href="{{ url_for('customer_complaints') }}" class="subtle-link">View all <i data-lucide="arrow-right"></i></a></div>
+    {% if recent %}<div class="table-wrap"><table><thead><tr><th>Case</th><th>Summary</th><th>Status</th><th>Submitted</th><th><span class="sr-only">View</span></th></tr></thead><tbody>
+    {% for row in recent %}<tr><td><a class="id-link" href="{{ url_for('customer_complaint_detail', complaint_id=row.id) }}">#{{ row.id }}</a></td><td class="customer-summary">{{ row.summary or row.complaint_text|truncate(90) }}</td><td><span class="badge status-{{ row.status|lower|replace(' ','-') }}">{{ row.status }}</span></td><td class="date-cell">{{ row.created_at|datetime }}</td><td><a class="icon-button" href="{{ url_for('customer_complaint_detail', complaint_id=row.id) }}" aria-label="View your complaint"><i data-lucide="arrow-up-right"></i></a></td></tr>{% endfor %}
+    </tbody></table></div>
+    {% else %}<div class="empty-state"><i data-lucide="inbox"></i><h3>No complaints submitted yet</h3><p>When you submit a complaint, its progress will appear here.</p><a class="button button-primary" href="{{ url_for('customer_submit_page') }}">Submit your first complaint</a></div>{% endif %}
+  </article>
+  <aside class="panel customer-help-card"><span class="help-icon"><i data-lucide="life-buoy"></i></span><span class="eyebrow">NEED HELP?</span><h2>Your cases, in one place</h2><p>Open any complaint to review the information you submitted and see its latest response.</p><a href="{{ url_for('customer_complaints') }}" class="subtle-link">Browse my complaints <i data-lucide="arrow-right"></i></a></aside>
+</section>
+{% endblock %}
